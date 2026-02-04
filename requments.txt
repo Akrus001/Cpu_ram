@@ -1,0 +1,6 @@
+Pyqt5
+pathlib
+gputil
+psutil
+ctypes
+Вроде все
