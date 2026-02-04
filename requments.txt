@@ -1,0 +1,5 @@
+Pyqt5
+pathlib
+gputil
+psutil
+ctypes
