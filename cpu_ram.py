@@ -1,17 +1,16 @@
 import sys
 import os
-from pathlib import Path
 from PyQt5.QtWidgets import *
 import psutil
 from PyQt5.QtCore import QTimer
 from PyQt5.QtCore import *
-import ctypes
-from PyQt5.QtWinExtras import QtWin
 from PyQt5.QtGui import QIcon, QFont
 import GPUtil
 
 is_icon = True
 is_text = True
+
+
 
 def resource_path(relative_path):
 
@@ -168,6 +167,8 @@ def cpu_change(checked):
         cpu.show()
     else:
         cpu.hide()
+    with(open("param.txt", "w+")) as f:
+        f.write(f"CPU: {checked}\n")
     resize_window()
 
 def ram_change(checked):
@@ -182,6 +183,8 @@ def gpu_change(checked):
         gpu.show()
     else:
         gpu.hide()
+    with(open("param.txt", "w+")) as f:
+        f.write(f"GPU: {checked}\n")
     resize_window()
 
 def icon_change(checked):
@@ -190,6 +193,8 @@ def icon_change(checked):
         is_icon = True
     else:
         is_icon = False
+    with(open("param.txt", "w+")) as f:
+        f.write(f"Icon: {checked}\n")
     update()
     resize_window()
 
@@ -207,12 +212,15 @@ def text_change(checked):
         cpu.setFont(font)
         gpu.setFont(font)
         ram.setFont(font)
-
+    with(open("param.txt", "w+")) as f:
+        f.write(f"Text: {checked}\n")
     resize_window()
 
 def toggle_theme():
     global is_dark_theme
     is_dark_theme = not is_dark_theme
+    with(open("param.txt", "w+")) as f:
+        f.write(f"Theme: {'Dark' if is_dark_theme else 'Light'}\n")
     apply_theme()
     update() 
 
@@ -273,6 +281,23 @@ window.windowEvent = windowEvent
 timer = QTimer()
 timer.timeout.connect(update)
 timer.start(1000)
+
+with(open("param.txt", "a+")) as f:
+    f.seek(0)
+    lines = f.readlines()
+    for line in lines:
+        if line.startswith("CPU:"):
+            cpu.setVisible(line.strip().split(": ")[1] == "True")
+        elif line.startswith("RAM:"):
+            ram.setVisible(line.strip().split(": ")[1] == "True")
+        elif line.startswith("GPU:"):
+            gpu.setVisible(line.strip().split(": ")[1] == "True")
+        elif line.startswith("Icon:"):
+            is_icon = line.strip().split(": ")[1] == "True"
+        elif line.startswith("Text:"):
+            is_text = line.strip().split(": ")[1] == "True"
+        elif line.startswith("Theme:"):
+            is_dark_theme = line.strip().split(": ")[1] == "Dark"
 
 update()
 resize_window()
